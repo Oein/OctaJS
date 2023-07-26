@@ -47,11 +47,19 @@ export default class Octa {
   private joinListener<K extends keyof ClientEvents>(event: EventListener<K>) {
     if (!!event.once)
       this.bot.once(event.type, (...l) => {
-        event.listener(this.bot, ...l);
+        try {
+          event.listener(this.bot, ...l);
+        } catch (e) {
+          console.error(e);
+        }
       });
     else
       this.bot.on(event.type, (...l) => {
-        event.listener(this.bot, ...l);
+        try {
+          event.listener(this.bot, ...l);
+        } catch (e) {
+          console.error(e);
+        }
       });
   }
 
