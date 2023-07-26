@@ -1,0 +1,19 @@
+{
+  "devDependencies": {
+    "@types/node": "^20.4.5",
+    "typescript": "^5.1.6"
+  },
+  "dependencies": {
+    "discord.js": "^14.11.0"
+  },
+  "main": "./dist/package/index.js",
+  "types": "./dist/package/index.d.ts",
+  "name": "octajs",
+  "description": "Discord.js wrapper for easy usage",
+  "license": "MIT",
+  "author": "Oein",
+  "files": [
+    "dist/package"
+  ],
+  "version": "1.0.0-2"
+}
