@@ -1,0 +1,6 @@
+node_modules
+dist
+src/index.ts
+.DS_Store
+**/.DS_Store
+src/index.ts
