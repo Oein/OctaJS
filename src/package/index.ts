@@ -10,7 +10,12 @@ import { EventBuilder, EventListener } from "./event";
 import getDM from "./util/getDM";
 import { Command, CommandBuilder } from "./command";
 
-console.log(`
+let logoPrinted = false;
+
+function printLogo() {
+  if (logoPrinted) return;
+  logoPrinted = true;
+  console.log(`
                       ██████╗  ██████╗████████╗ █████╗ 
                      ██╔═══██╗██╔════╝╚══██╔══╝██╔══██╗
  You are powered by  ██║   ██║██║        ██║   ███████║
@@ -18,11 +23,14 @@ console.log(`
                      ╚██████╔╝╚██████╗   ██║   ██║  ██║
                       ╚═════╝  ╚═════╝   ╚═╝   ╚═╝  ╚═╝  v1.0.0
 `);
+}
 
 export { getDM, EventBuilder, EventListener };
 
 export type OctaInitProps = {
   token: string;
+  catchError?: boolean;
+  showLogo?: boolean;
 };
 
 export type WorkItem = {
@@ -35,6 +43,7 @@ export default class Octa {
   public bot: Client;
   private token: string;
   private workList: WorkItem[] = [];
+  private catchError = false;
   private commands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [];
   private guildCommands: {
     [key: string]: RESTPostAPIChatInputApplicationCommandsJSONBody[];
@@ -42,24 +51,31 @@ export default class Octa {
   constructor(props: OctaInitProps, discordBotOptions: ClientOptions) {
     this.bot = new Client(discordBotOptions);
     this.token = props.token;
+    if (typeof props.catchError != "undefined")
+      this.catchError = props.catchError;
+    if (props.showLogo !== false) printLogo();
   }
 
   private joinListener<K extends keyof ClientEvents>(event: EventListener<K>) {
     if (!!event.once)
-      this.bot.once(event.type, (...l) => {
-        try {
-          event.listener(this.bot, ...l);
-        } catch (e) {
-          console.error(e);
-        }
+      this.bot.once<K>(event.type, (...l) => {
+        if (this.catchError)
+          try {
+            event.listener(this.bot, ...l);
+          } catch (e) {
+            console.error(e);
+          }
+        else event.listener(this.bot, ...l);
       });
     else
       this.bot.on(event.type, (...l) => {
-        try {
-          event.listener(this.bot, ...l);
-        } catch (e) {
-          console.error(e);
-        }
+        if (this.catchError)
+          try {
+            event.listener(this.bot, ...l);
+          } catch (e) {
+            console.error(e);
+          }
+        else event.listener(this.bot, ...l);
       });
   }
 
