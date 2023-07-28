@@ -2,6 +2,7 @@ import {
   Client,
   ClientEvents,
   ClientOptions,
+  GatewayIntentsString,
   REST,
   RESTPostAPIChatInputApplicationCommandsJSONBody,
   Routes,
@@ -11,6 +12,27 @@ import getDM from "./util/getDM";
 import { Command, CommandBuilder } from "./command";
 
 let logoPrinted = false;
+
+const ALL_INTENTS: GatewayIntentsString[] = [
+  "Guilds",
+  "GuildMembers",
+  "GuildModeration",
+  "GuildEmojisAndStickers",
+  "GuildIntegrations",
+  "GuildWebhooks",
+  "GuildInvites",
+  "GuildVoiceStates",
+  "GuildPresences",
+  "GuildMessageReactions",
+  "GuildMessageTyping",
+  "DirectMessages",
+  "DirectMessageReactions",
+  "DirectMessageTyping",
+  "MessageContent",
+  "GuildScheduledEvents",
+  "AutoModerationConfiguration",
+  "AutoModerationExecution",
+];
 
 function printLogo() {
   if (logoPrinted) return;
@@ -25,7 +47,7 @@ function printLogo() {
 `);
 }
 
-export { getDM, EventBuilder, EventListener };
+export { getDM, EventBuilder, EventListener, ALL_INTENTS };
 
 export type OctaInitProps = {
   token: string;
@@ -170,6 +192,8 @@ export default class Octa {
     });
     return this;
   }
+
+  public onStart() {}
 
   public async start() {
     for (let i = 0; i < this.workList.length; i++) {
