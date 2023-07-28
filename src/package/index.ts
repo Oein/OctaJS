@@ -1,4 +1,5 @@
 import {
+  Awaitable,
   Client,
   ClientEvents,
   ClientOptions,
@@ -193,7 +194,17 @@ export default class Octa {
     return this;
   }
 
-  public onStart() {}
+  public onStart(
+    listener: (bot: Client, ...args: ClientEvents["ready"]) => Awaitable<void>,
+    once: boolean = true
+  ) {
+    this.event({
+      type: "ready",
+      listener: listener,
+      once,
+    });
+    return this;
+  }
 
   public async start() {
     for (let i = 0; i < this.workList.length; i++) {
