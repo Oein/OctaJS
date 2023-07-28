@@ -16,6 +16,9 @@ let logoPrinted = false;
 
 const ALL_INTENTS: GatewayIntentsString[] = [
   "Guilds",
+  "GuildMessageReactions",
+  "GuildMessageTyping",
+  "GuildMessages",
   "GuildMembers",
   "GuildModeration",
   "GuildEmojisAndStickers",
