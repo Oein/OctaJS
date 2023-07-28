@@ -10,10 +10,10 @@
   "types": "./dist/package/index.d.ts",
   "name": "octajs",
   "description": "Discord.js wrapper for easy usage",
-  "license": "MIT",
+  "license": "The Unlicense",
   "author": "Oein",
   "files": [
     "dist/package"
   ],
-  "version": "1.0.4"
+  "version": "1.0.5"
 }
