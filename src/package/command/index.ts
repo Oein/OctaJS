@@ -149,8 +149,12 @@ export class CommandBuilder {
     });
   }
 
-  private addNumberOption(func: any, option: any, name: string) {
-    return func((inp: any) => {
+  private addDoubleOption(
+    slashCommand: SlashCommandBuilderExecutable,
+    option: DoubleOption & OptionDefaultType,
+    name: string
+  ) {
+    slashCommand.addNumberOption((inp) => {
       inp
         .setName(name)
         .setDescription(option.description)
@@ -162,14 +166,7 @@ export class CommandBuilder {
         inp.setAutocomplete(option.autocomplete);
       return inp;
     });
-  }
-
-  private addDoubleOption(
-    slashCommand: SlashCommandBuilderExecutable,
-    option: DoubleOption & OptionDefaultType,
-    name: string
-  ) {
-    return this.addNumberOption(slashCommand.addNumberOption, option, name);
+    return slashCommand;
   }
 
   private addIntegerOption(
@@ -177,7 +174,19 @@ export class CommandBuilder {
     option: IntegerOption & OptionDefaultType,
     name: string
   ) {
-    return this.addNumberOption(slashCommand.addIntegerOption, option, name);
+    slashCommand.addIntegerOption((inp) => {
+      inp
+        .setName(name)
+        .setDescription(option.description)
+        .setRequired(option.required);
+      if (option.minValue) inp.setMinValue(option.minValue);
+      if (option.maxValue) inp.setMaxValue(option.maxValue);
+      if (option.choices) inp.setChoices(...option.choices);
+      if (typeof option.autocomplete != "undefined")
+        inp.setAutocomplete(option.autocomplete);
+      return inp;
+    });
+    return slashCommand;
   }
 
   private addUserOption(
