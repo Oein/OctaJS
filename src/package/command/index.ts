@@ -1,4 +1,6 @@
 import {
+  APIApplicationCommandOptionChoice,
+  ApplicationCommandOptionAllowedChannelTypes,
   Client,
   CommandInteraction,
   SlashCommandBuilder,
@@ -6,31 +8,64 @@ import {
   SlashCommandSubcommandsOnlyBuilder,
 } from "discord.js";
 
-export interface OptionType {
-  happy: [cat: number];
-}
-
 export type CommandListener = (
   bot: Client,
   interaction: CommandInteraction
 ) => Promise<any> | any;
-
 export type OptionDefaultType = {
   description: string;
   required: boolean;
 };
-
 export type BooleanOption = {
   type: "Boolean";
-  sans: string;
 };
-
+export type NumberOption = {
+  minValue?: number;
+  maxValue?: number;
+  choices?: APIApplicationCommandOptionChoice<number>[];
+  autocomplete?: boolean;
+};
 export type DoubleOption = {
   type: "Double";
-  wa: number;
+} & NumberOption;
+export type IntegerOption = {
+  type: "Integer";
+} & NumberOption;
+export type UserOption = {
+  type: "User";
 };
-
-export type Option = (BooleanOption | DoubleOption) & OptionDefaultType;
+export type ChannelOption = {
+  type: "Channel";
+  channelTypes?: ApplicationCommandOptionAllowedChannelTypes[];
+};
+export type RoleOption = {
+  type: "Role";
+};
+export type AttachmentOption = {
+  type: "Attachment";
+};
+export type MentionableOption = {
+  type: "Mentionable";
+};
+export type StringOption = {
+  type: "String";
+  choices?: APIApplicationCommandOptionChoice<string>[];
+  autocomplete?: boolean;
+  minLength?: number;
+  maxLength?: number;
+};
+export type Option = (
+  | BooleanOption
+  | DoubleOption
+  | IntegerOption
+  | UserOption
+  | ChannelOption
+  | RoleOption
+  | AttachmentOption
+  | MentionableOption
+  | StringOption
+) &
+  OptionDefaultType;
 export type Options = { [key: string]: Option };
 export type SubCommands = {
   [key: string]: Omit<
@@ -49,14 +84,11 @@ export type SubCommandGroups = {
     subcommands: SubCommands;
   };
 };
-
 export type DefaultMemberPermissions = string | number | bigint;
-
 export type SlashCommandBuilderExecutable = Omit<
   SlashCommandBuilder,
   "addSubcommand" | "addSubcommandGroup"
 >;
-
 export type BaseCommandType = {
   name: string;
   description: string;
@@ -66,16 +98,13 @@ export type BaseCommandType = {
   nsfw?: boolean;
   guild?: string;
 };
-
 export type OptionCommand = {
   options?: Options;
 } & BaseCommandType;
-
 export type SubcommandCommand = {
   subcommands?: SubCommands;
   subcommandGroups?: SubCommandGroups;
 } & Omit<BaseCommandType, "executes">;
-
 export type Command = OptionCommand | SubcommandCommand;
 
 export class CommandBuilder {
@@ -120,6 +149,124 @@ export class CommandBuilder {
     });
   }
 
+  private addNumberOption(func: any, option: any, name: string) {
+    return func((inp: any) => {
+      inp
+        .setName(name)
+        .setDescription(option.description)
+        .setRequired(option.required);
+      if (option.minValue) inp.setMinValue(option.minValue);
+      if (option.maxValue) inp.setMaxValue(option.maxValue);
+      if (option.choices) inp.setChoices(...option.choices);
+      if (typeof option.autocomplete != "undefined")
+        inp.setAutocomplete(option.autocomplete);
+      return inp;
+    });
+  }
+
+  private addDoubleOption(
+    slashCommand: SlashCommandBuilderExecutable,
+    option: DoubleOption & OptionDefaultType,
+    name: string
+  ) {
+    return this.addNumberOption(slashCommand.addNumberOption, option, name);
+  }
+
+  private addIntegerOption(
+    slashCommand: SlashCommandBuilderExecutable,
+    option: IntegerOption & OptionDefaultType,
+    name: string
+  ) {
+    return this.addNumberOption(slashCommand.addIntegerOption, option, name);
+  }
+
+  private addUserOption(
+    slashCommand: SlashCommandBuilderExecutable,
+    option: UserOption & OptionDefaultType,
+    name: string
+  ) {
+    return slashCommand.addUserOption((inp) => {
+      inp.setName(name);
+      inp.setDescription(option.description);
+      inp.setRequired(option.required);
+      return inp;
+    });
+  }
+
+  private addChannelOption(
+    slashCommand: SlashCommandBuilderExecutable,
+    option: ChannelOption & OptionDefaultType,
+    name: string
+  ) {
+    return slashCommand.addChannelOption((inp) => {
+      inp.setName(name);
+      inp.setDescription(option.description);
+      inp.setRequired(option.required);
+      if (option.channelTypes) inp.addChannelTypes(...option.channelTypes);
+      return inp;
+    });
+  }
+
+  private addRoleOption(
+    slashCommand: SlashCommandBuilderExecutable,
+    option: RoleOption & OptionDefaultType,
+    name: string
+  ) {
+    return slashCommand.addRoleOption((inp) => {
+      inp.setName(name);
+      inp.setDescription(option.description);
+      inp.setRequired(option.required);
+      return inp;
+    });
+  }
+
+  private addAttachmentOption(
+    slashCommand: SlashCommandBuilderExecutable,
+    option: AttachmentOption & OptionDefaultType,
+    name: string
+  ) {
+    return slashCommand.addAttachmentOption((inp) => {
+      inp.setName(name);
+      inp.setDescription(option.description);
+      inp.setRequired(option.required);
+      return inp;
+    });
+  }
+
+  private addMentionableOption(
+    slashCommand: SlashCommandBuilderExecutable,
+    option: MentionableOption & OptionDefaultType,
+    name: string
+  ) {
+    return slashCommand.addMentionableOption((inp) => {
+      inp.setName(name);
+      inp.setDescription(option.description);
+      inp.setRequired(option.required);
+      return inp;
+    });
+  }
+
+  private addStringOption(
+    slashCommand: SlashCommandBuilderExecutable,
+    option: StringOption & OptionDefaultType,
+    name: string
+  ) {
+    return slashCommand.addStringOption((inp) => {
+      inp.setName(name);
+      inp.setDescription(option.description);
+      inp.setRequired(option.required);
+      if (typeof option.autocomplete != "undefined")
+        inp.setAutocomplete(option.autocomplete);
+      if (option.choices) inp.setChoices(...option.choices);
+      if (typeof option.minLength != "undefined")
+        inp.setMinLength(option.minLength);
+      if (typeof option.maxLength != "undefined")
+        inp.setMaxLength(option.maxLength);
+
+      return inp;
+    });
+  }
+
   private addOptionToCommand(
     slashCommand: SlashCommandBuilderExecutable,
     options: Options
@@ -131,6 +278,30 @@ export class CommandBuilder {
       switch (option.type) {
         case "Boolean":
           slashCommand = this.addBooleanOption(slashCommand, option, name);
+          break;
+        case "Double":
+          slashCommand = this.addDoubleOption(slashCommand, option, name);
+          break;
+        case "Integer":
+          slashCommand = this.addIntegerOption(slashCommand, option, name);
+          break;
+        case "User":
+          slashCommand = this.addUserOption(slashCommand, option, name);
+          break;
+        case "Channel":
+          slashCommand = this.addChannelOption(slashCommand, option, name);
+          break;
+        case "Role":
+          slashCommand = this.addRoleOption(slashCommand, option, name);
+          break;
+        case "Attachment":
+          slashCommand = this.addAttachmentOption(slashCommand, option, name);
+          break;
+        case "Mentionable":
+          slashCommand = this.addMentionableOption(slashCommand, option, name);
+          break;
+        case "String":
+          slashCommand = this.addStringOption(slashCommand, option, name);
           break;
         default:
           break;
