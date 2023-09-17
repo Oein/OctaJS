@@ -1,8 +1,8 @@
 import {
   APIApplicationCommandOptionChoice,
   ApplicationCommandOptionAllowedChannelTypes,
+  ChatInputCommandInteraction,
   Client,
-  CommandInteraction,
   SlashCommandBuilder,
   SlashCommandSubcommandBuilder,
   SlashCommandSubcommandsOnlyBuilder,
@@ -10,7 +10,7 @@ import {
 
 export type CommandListener = (
   bot: Client,
-  interaction: CommandInteraction
+  interaction: ChatInputCommandInteraction
 ) => Promise<any> | any;
 export type OptionDefaultType = {
   description: string;
