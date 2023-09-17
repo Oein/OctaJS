@@ -4,3 +4,4 @@ src/index.ts
 .DS_Store
 **/.DS_Store
 src/index.ts
+src/test/env.ts
