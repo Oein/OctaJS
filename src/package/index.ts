@@ -51,7 +51,14 @@ function printLogo() {
 `);
 }
 
-export { getDM, EventBuilder, EventListener, ALL_INTENTS };
+export {
+  getDM,
+  EventBuilder,
+  EventListener,
+  ALL_INTENTS,
+  Command,
+  CommandBuilder,
+};
 
 export type OctaInitProps = {
   token: string;
